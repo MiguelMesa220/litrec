@@ -1,12 +1,14 @@
 import { Router } from "express";
-import { pool } from "../db/pool.js"
+import { pool } from "../db/pool.js";
+import bcrypt from "bcrypt";
 
 export const usersRouter = Router();
 
 usersRouter.post("/", async (req, res)=> {
-    const { username, displayName, email, passwordHash } = req.body;
+    const { username, displayName, email, password } = req.body;
 
     try{
+        const passwordHash = await bcrypt.hash(password, 12);
         const result = await pool.query(
             `
             INSERT INTO users (
