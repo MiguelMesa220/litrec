@@ -41,7 +41,24 @@ usersRouter.post("/", async (req, res)=> {
         res.status(201).json(result.rows[0]);
     } catch(error){
         console.error(error);
-        res.status(500).json({error: " Failed to create user" });
+        if (error.code === "23505"){
+            if(error.constraint === "users_username_key"){
+                return res.status(409).json({
+                    error: "Username already exists",
+                });
+            }
+            if(error.constraint === "users_email_key"){
+                return res.status(409).json({
+                    error: "Email already exists",
+                });
+            }
+            return res.status(409).json({
+                    error: "User already exists",
+                });
+        }
+        res.status(500).json({
+            error: " Failed to create user",
+        });
     }
 
 });
